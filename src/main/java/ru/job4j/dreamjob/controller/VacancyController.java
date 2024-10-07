@@ -1,6 +1,5 @@
 package ru.job4j.dreamjob.controller;
 
-import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,5 +17,4 @@ public class VacancyController {
         model.addAttribute("vacancies", vacancyRepository.findAll());
         return "vacancies/list";
     }
-
 }
