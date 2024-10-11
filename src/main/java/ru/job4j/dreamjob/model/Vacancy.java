@@ -9,8 +9,6 @@ public class Vacancy {
     private String description;
     private boolean visible;
 
-
-
     private LocalDateTime creationDate = LocalDateTime.now();
 
     public Vacancy() {
@@ -40,6 +38,7 @@ public class Vacancy {
     public int hashCode() {
         return Objects.hash(id);
     }
+
     public boolean getVisible() {
         return visible;
     }
@@ -47,6 +46,7 @@ public class Vacancy {
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
+
     public int getId() {
         return id;
     }
