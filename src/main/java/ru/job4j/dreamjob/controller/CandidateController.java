@@ -5,14 +5,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.dreamjob.model.Candidate;
 import ru.job4j.dreamjob.service.CandidateService;
-import ru.job4j.dreamjob.service.SimpleCandidateService;
 
 import java.util.Optional;
 
 @Controller
 @RequestMapping("/candidates")
 public class CandidateController {
-    private final CandidateService candidateRepository = SimpleCandidateService.getInstance();
+    private final CandidateService candidateRepository;
+
+    public CandidateController(CandidateService candidateRepository) {
+        this.candidateRepository = candidateRepository;
+    }
 
     @GetMapping
     public String getAll(Model model) {
