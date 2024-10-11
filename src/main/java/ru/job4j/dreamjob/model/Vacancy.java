@@ -8,18 +8,20 @@ public class Vacancy {
     private String title;
     private String description;
     private boolean visible;
+    private int cityId;
 
     private LocalDateTime creationDate = LocalDateTime.now();
 
     public Vacancy() {
     }
 
-    public Vacancy(int id, String title, String description, LocalDateTime creationDate, boolean visible) {
+    public Vacancy(int id, String title, String description, LocalDateTime creationDate, boolean visible, int cityId) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.creationDate = creationDate;
         this.visible = visible;
+        this.cityId = cityId;
     }
 
     @Override
@@ -37,6 +39,14 @@ public class Vacancy {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public int getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(int cityId) {
+        this.cityId = cityId;
     }
 
     public boolean getVisible() {
