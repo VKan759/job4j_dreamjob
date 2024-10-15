@@ -2,6 +2,8 @@ package ru.job4j.dreamjob.service;
 
 import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Service;
+import ru.job4j.dreamjob.dto.FileDto;
+import ru.job4j.dreamjob.model.File;
 import ru.job4j.dreamjob.model.Vacancy;
 import ru.job4j.dreamjob.repository.VacancyRepository;
 
@@ -12,14 +14,22 @@ import java.util.Optional;
 @Service
 public class SimpleVacancyService implements VacancyService {
     private final VacancyRepository vacancyRepository;
+    private final FileService fileService;
 
-    private SimpleVacancyService(VacancyRepository vacancyRepository) {
+    private SimpleVacancyService(VacancyRepository vacancyRepository, FileService fileService) {
         this.vacancyRepository = vacancyRepository;
+        this.fileService = fileService;
     }
 
     @Override
-    public Vacancy save(Vacancy vacancy) {
+    public Vacancy save(Vacancy vacancy, FileDto fileDto) {
+        saveNewFile(vacancy, fileDto);
         return vacancyRepository.save(vacancy);
+    }
+
+    private void saveNewFile(Vacancy vacancy, FileDto fileDto) {
+        File file = fileService.save(fileDto);
+        vacancy.setFileId(file.getId());
     }
 
     @Override
@@ -28,8 +38,16 @@ public class SimpleVacancyService implements VacancyService {
     }
 
     @Override
-    public boolean update(Vacancy vacancy) {
-        return vacancyRepository.update(vacancy);
+    public boolean update(Vacancy vacancy, FileDto fileDto) {
+        boolean isEmpty = fileDto.getContent().length == 0;
+        if (isEmpty) {
+            return vacancyRepository.update(vacancy);
+        }
+        var oldFileId = vacancy.getFileId();
+        saveNewFile(vacancy, fileDto);
+        var isUpdated = vacancyRepository.update(vacancy);
+        fileService.deleteById(oldFileId);
+        return isUpdated;
     }
 
     @Override

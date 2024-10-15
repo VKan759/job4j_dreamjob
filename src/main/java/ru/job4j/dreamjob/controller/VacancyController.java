@@ -4,10 +4,14 @@ import net.jcip.annotations.ThreadSafe;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import ru.job4j.dreamjob.dto.FileDto;
 import ru.job4j.dreamjob.model.Vacancy;
 import ru.job4j.dreamjob.service.CityService;
 import ru.job4j.dreamjob.service.VacancyService;
 
+import javax.servlet.annotation.MultipartConfig;
+import java.io.IOException;
 import java.util.Optional;
 
 @ThreadSafe
@@ -35,9 +39,15 @@ public class VacancyController {
     }
 
     @PostMapping("/create")
-    public String create(@ModelAttribute Vacancy vacancy) {
-        vacancyRepository.save(vacancy);
-        return "redirect:/vacancies";
+    public String create(@ModelAttribute Vacancy vacancy, @RequestParam MultipartFile file, Model model) {
+        try {
+            vacancyRepository.save(vacancy, new FileDto(file.getName(), file.getBytes()));
+            return "redirect:/vacancies";
+        } catch (IOException e) {
+            model.addAttribute("message", e.getMessage());
+            return "errors/404";
+        }
+
     }
 
     @GetMapping("/{id}")
@@ -53,13 +63,18 @@ public class VacancyController {
     }
 
     @PostMapping("/update")
-    public String update(@ModelAttribute Vacancy vacancy, Model model) {
-        boolean updated = vacancyRepository.update(vacancy);
-        if (!updated) {
-            model.addAttribute("message", "Вакансия с указанным идентификатором не найдена");
+    public String update(@ModelAttribute Vacancy vacancy, @RequestParam MultipartFile file, Model model) {
+        try {
+            boolean updated = vacancyRepository.update(vacancy, new FileDto(file.getName(), file.getBytes()));
+            if (!updated) {
+                model.addAttribute("message", "Вакансия с указанным идентификатором не найдена");
+                return "errors/404";
+            }
+            return "redirect:/vacancies";
+        } catch (Exception exception) {
+            model.addAttribute("message", exception.getMessage());
             return "errors/404";
         }
-        return "redirect:/vacancies";
     }
 
     @GetMapping("/delete/{id}")
