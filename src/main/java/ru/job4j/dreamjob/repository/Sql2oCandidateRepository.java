@@ -23,7 +23,7 @@ public class Sql2oCandidateRepository implements CandidateRepository {
                     insert into candidates (name, description, creation_date, city_id, file_id)
                     values (:name, :description, :creationDate, :cityId, :fileId)
                     """;
-            Query query = connection.createQuery(sql, true)
+            var query = connection.createQuery(sql, true)
                     .addParameter("name", candidate.getName())
                     .addParameter("description", candidate.getDescription())
                     .addParameter("creationDate", candidate.getCreationDate())
