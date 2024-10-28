@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.job4j.dreamjob.model.User;
 import ru.job4j.dreamjob.service.UserService;
 
+import java.util.Optional;
+
 @Controller
 @ThreadSafe
 @RequestMapping("/users")
@@ -18,18 +20,18 @@ public class UserController {
     }
 
     @GetMapping("/register")
-    public String getRegistationPage() {
+    public String getRegistrationPage() {
         return "users/register";
     }
 
     @PostMapping("/register")
-    public String register(User user) {
-        try {
-            userService.save(user);
-            return "users/login";
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public String register(Model model, @ModelAttribute User user) {
+        Optional<User> saved = userService.save(user);
+        if (saved.isEmpty()) {
+            model.addAttribute("message", "Пользователь с такой почтой существует");
+            return "errors/404";
         }
+        return "redirect:/users/register";
     }
 
     @GetMapping("/login")
