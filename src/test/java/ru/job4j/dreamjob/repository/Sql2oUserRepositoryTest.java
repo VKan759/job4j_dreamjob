@@ -54,7 +54,7 @@ class Sql2oUserRepositoryTest {
     void whenSaveDuplicate() {
         User user = new User(0, "gmail@gmail.com", "User", "password");
         userRepository.save(user);
-        assertThatThrownBy(() -> userRepository.save(user)).isInstanceOf(Sql2oException.class);
+        assertThat(userRepository.save(user)).isEqualTo(Optional.empty());
     }
 
     @Test
