@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.job4j.dreamjob.dto.FileDto;
 import ru.job4j.dreamjob.model.Candidate;
-import ru.job4j.dreamjob.model.User;
 import ru.job4j.dreamjob.service.CandidateService;
 import ru.job4j.dreamjob.service.CityService;
 
@@ -29,16 +28,12 @@ public class CandidateController {
 
     @GetMapping
     public String getAll(Model model, HttpSession session) {
-        User user = getUser(session);
-        model.addAttribute("user", user);
         model.addAttribute("candidates", candidateRepository.findAll());
         return "candidates/list";
     }
 
     @GetMapping("/create")
     public String createResume(Model model, HttpSession session) {
-        User user = getUser(session);
-        model.addAttribute("user", user);
         model.addAttribute("cities", cityService.findAll());
         return "candidates/create";
     }
@@ -73,8 +68,6 @@ public class CandidateController {
     @GetMapping("/{id}")
     public String getById(@PathVariable int id, Model model, HttpSession session) {
         Optional<Candidate> byId = candidateRepository.findById(id);
-        User user = getUser(session);
-        model.addAttribute("user", user);
         if (byId.isEmpty()) {
             model.addAttribute("message", "Кандидат с указанным id не найден");
             return "errors/404";
@@ -92,14 +85,5 @@ public class CandidateController {
             return "errors/404";
         }
         return "redirect:/candidates";
-    }
-
-    private User getUser(HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            user = new User();
-            user.setName("Гость");
-        }
-        return user;
     }
 }

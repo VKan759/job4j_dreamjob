@@ -6,12 +6,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.job4j.dreamjob.dto.FileDto;
-import ru.job4j.dreamjob.model.User;
 import ru.job4j.dreamjob.model.Vacancy;
 import ru.job4j.dreamjob.service.CityService;
 import ru.job4j.dreamjob.service.VacancyService;
 
-import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Optional;
@@ -30,16 +28,12 @@ public class VacancyController {
 
     @GetMapping
     public String getAll(Model model, HttpSession session) {
-        User user = getUser(session);
-        model.addAttribute("user", user);
         model.addAttribute("vacancies", vacancyRepository.findAll());
         return "vacancies/list";
     }
 
     @GetMapping("/create")
     public String getCreationPage(Model model, HttpSession session) {
-        User user = getUser(session);
-        model.addAttribute("user", user);
         model.addAttribute("cities", cityService.findAll());
         return "vacancies/create";
     }
@@ -58,8 +52,6 @@ public class VacancyController {
 
     @GetMapping("/{id}")
     public String getById(@PathVariable int id, Model model, HttpSession session) {
-        User user = getUser(session);
-        model.addAttribute("user", user);
         Optional<Vacancy> vacancy = vacancyRepository.findById(id);
         if (vacancy.isEmpty()) {
             model.addAttribute("message", "Вакансия не найдена");
@@ -88,21 +80,10 @@ public class VacancyController {
     @GetMapping("/delete/{id}")
     public String delete(Model model, @PathVariable int id, HttpSession session) {
         boolean deletedById = vacancyRepository.deleteById(id);
-        User user = getUser(session);
-        model.addAttribute("user", user);
         if (!deletedById) {
             model.addAttribute("message", "Вакансия с указанным идентификатором не найдена");
             return "errors/404";
         }
         return "redirect:/vacancies";
-    }
-
-    private User getUser(HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            user = new User();
-            user.setName("Гость");
-        }
-        return user;
     }
 }

@@ -23,8 +23,6 @@ public class UserController {
 
     @GetMapping("/register")
     public String getRegistrationPage(Model model, HttpSession session) {
-        User user = getUser(session);
-        model.addAttribute("user", user);
         return "users/register";
     }
 
@@ -32,7 +30,6 @@ public class UserController {
     public String register(Model model, @ModelAttribute User user, HttpSession session) {
         Optional<User> saved = userService.save(user);
         if (saved.isEmpty()) {
-            model.addAttribute("user", getUser(session));
             model.addAttribute("message", "Пользователь с такой почтой существует");
             return "errors/404";
         }
@@ -41,8 +38,6 @@ public class UserController {
 
     @GetMapping("/login")
     public String getLoginPage(Model model, HttpSession session) {
-        User user = getUser(session);
-        model.addAttribute("user", user);
         return "users/login";
     }
 
@@ -62,14 +57,5 @@ public class UserController {
     public String logOut(HttpSession session) {
         session.invalidate();
         return "redirect:/users/login";
-    }
-
-    private User getUser(HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            user = new User();
-            user.setName("Гость");
-        }
-        return user;
     }
 }
