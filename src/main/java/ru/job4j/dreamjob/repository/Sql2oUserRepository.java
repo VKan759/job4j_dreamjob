@@ -32,8 +32,8 @@ public class Sql2oUserRepository implements UserRepository {
             return Optional.of(user);
         } catch (Sql2oException e) {
             LOGGER.error("Ошибка добавления пользователя");
-            return Optional.empty();
         }
+        return Optional.empty();
     }
 
     @Override
