@@ -22,12 +22,12 @@ public class UserController {
     }
 
     @GetMapping("/register")
-    public String getRegistrationPage(Model model, HttpSession session) {
+    public String getRegistrationPage(Model model) {
         return "users/register";
     }
 
     @PostMapping("/register")
-    public String register(Model model, @ModelAttribute User user, HttpSession session) {
+    public String register(Model model, @ModelAttribute User user) {
         Optional<User> saved = userService.save(user);
         if (saved.isEmpty()) {
             model.addAttribute("message", "Пользователь с такой почтой существует");
@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String getLoginPage(Model model, HttpSession session) {
+    public String getLoginPage() {
         return "users/login";
     }
 

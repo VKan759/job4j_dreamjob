@@ -10,8 +10,6 @@ import ru.job4j.dreamjob.model.Vacancy;
 import ru.job4j.dreamjob.service.CityService;
 import ru.job4j.dreamjob.service.VacancyService;
 
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.Optional;
 
 @ThreadSafe
@@ -27,13 +25,13 @@ public class VacancyController {
     }
 
     @GetMapping
-    public String getAll(Model model, HttpSession session) {
+    public String getAll(Model model) {
         model.addAttribute("vacancies", vacancyRepository.findAll());
         return "vacancies/list";
     }
 
     @GetMapping("/create")
-    public String getCreationPage(Model model, HttpSession session) {
+    public String getCreationPage(Model model) {
         model.addAttribute("cities", cityService.findAll());
         return "vacancies/create";
     }
@@ -43,7 +41,7 @@ public class VacancyController {
         try {
             vacancyRepository.save(vacancy, new FileDto(file.getName(), file.getBytes()));
             return "redirect:/vacancies";
-        } catch (IOException e) {
+        } catch (Exception e) {
             model.addAttribute("message", e.getMessage());
             return "errors/404";
         }
@@ -51,7 +49,7 @@ public class VacancyController {
     }
 
     @GetMapping("/{id}")
-    public String getById(@PathVariable int id, Model model, HttpSession session) {
+    public String getById(@PathVariable int id, Model model) {
         Optional<Vacancy> vacancy = vacancyRepository.findById(id);
         if (vacancy.isEmpty()) {
             model.addAttribute("message", "Вакансия не найдена");
@@ -78,7 +76,7 @@ public class VacancyController {
     }
 
     @GetMapping("/delete/{id}")
-    public String delete(Model model, @PathVariable int id, HttpSession session) {
+    public String delete(Model model, @PathVariable int id) {
         boolean deletedById = vacancyRepository.deleteById(id);
         if (!deletedById) {
             model.addAttribute("message", "Вакансия с указанным идентификатором не найдена");

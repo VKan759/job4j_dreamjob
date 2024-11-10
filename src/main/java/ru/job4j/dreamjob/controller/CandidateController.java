@@ -18,22 +18,22 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/candidates")
 public class CandidateController {
-    private final CandidateService candidateRepository;
+    private final CandidateService candidateService;
     private final CityService cityService;
 
-    public CandidateController(CandidateService candidateRepository, CityService cityService) {
-        this.candidateRepository = candidateRepository;
+    public CandidateController(CandidateService candidateService, CityService cityService) {
+        this.candidateService = candidateService;
         this.cityService = cityService;
     }
 
     @GetMapping
-    public String getAll(Model model, HttpSession session) {
-        model.addAttribute("candidates", candidateRepository.findAll());
+    public String getAll(Model model) {
+        model.addAttribute("candidates", candidateService.findAll());
         return "candidates/list";
     }
 
     @GetMapping("/create")
-    public String createResume(Model model, HttpSession session) {
+    public String createResume(Model model) {
         model.addAttribute("cities", cityService.findAll());
         return "candidates/create";
     }
@@ -42,9 +42,9 @@ public class CandidateController {
     public String addCandidate(@ModelAttribute Candidate candidate, @RequestParam MultipartFile file,
                                Model model) {
         try {
-            candidateRepository.save(candidate, new FileDto(file.getOriginalFilename(), file.getBytes()));
+            candidateService.save(candidate, new FileDto(file.getName(), file.getBytes()));
             return "redirect:/candidates";
-        } catch (IOException e) {
+        } catch (Exception e) {
             model.addAttribute("message", e.getMessage());
             return "errors/404";
         }
@@ -53,7 +53,7 @@ public class CandidateController {
     @PostMapping("/update")
     public String update(Model model, @ModelAttribute Candidate candidate, @RequestParam MultipartFile file) {
         try {
-            boolean updated = candidateRepository.update(candidate, new FileDto(file.getName(), file.getBytes()));
+            boolean updated = candidateService.update(candidate, new FileDto(file.getName(), file.getBytes()));
             if (!updated) {
                 model.addAttribute("message", "Кандидат с указанным идентификатором не найден");
                 return "errors/404";
@@ -67,7 +67,7 @@ public class CandidateController {
 
     @GetMapping("/{id}")
     public String getById(@PathVariable int id, Model model, HttpSession session) {
-        Optional<Candidate> byId = candidateRepository.findById(id);
+        Optional<Candidate> byId = candidateService.findById(id);
         if (byId.isEmpty()) {
             model.addAttribute("message", "Кандидат с указанным id не найден");
             return "errors/404";
@@ -79,7 +79,7 @@ public class CandidateController {
 
     @GetMapping("/delete/{id}")
     public String delete(Model model, @PathVariable int id) {
-        boolean deletedById = candidateRepository.deleteById(id);
+        boolean deletedById = candidateService.deleteById(id);
         if (!deletedById) {
             model.addAttribute("message", "Кандидат с указанным id не найден");
             return "errors/404";
